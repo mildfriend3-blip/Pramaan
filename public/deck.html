@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAMAAN · 12-Slide Master Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #121929;
+      --border: #232f48;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --gold: #f59e0b;
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --red: #ef4444;
+      --font: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Tricolor Banner */
+    .top-ribbon {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #128807 100%);
+    }
+
+    /* Deck Nav Header */
+    .deck-nav {
+      padding: 0.75rem 2rem;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-pill {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--gold);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-deck {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-deck:hover {
+      background: #1c273e;
+      border-color: var(--gold);
+    }
+
+    .btn-primary-deck {
+      background: linear-gradient(135deg, var(--gold), #d97706);
+      color: #000;
+      border: none;
+    }
+    .btn-primary-deck:hover {
+      background: linear-gradient(135deg, #fbbf24, var(--gold));
+    }
+
+    /* Main Deck Stage */
+    .deck-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1180px;
+      height: 80vh;
+      max-height: 720px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem 4rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease-out;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Content Typography */
+    .slide-num-pill {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    /* Grids & Cards */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .card-metric {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-metric::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 3px;
+      background: var(--gold);
+    }
+
+    .metric-val {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-lbl {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .box-quote {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 4px solid var(--gold);
+      padding: 1.25rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.25rem 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Comparison Table */
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .comp-table th, .comp-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .comp-table th {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comp-col-highlight {
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--green);
+      font-weight: 600;
+      border-left: 1px solid rgba(16, 185, 129, 0.3);
+      border-right: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Footer & Speaker Notes */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .notes-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #000000;
+      border-top: 2px solid var(--gold);
+      padding: 1.25rem 2rem;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .notes-drawer.open {
+      display: block;
+    }
+
+    .notes-title {
+      font-size: 0.75rem;
+      color: var(--gold);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .notes-content {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-ribbon"></div>
+
+  <!-- Header Navigation -->
+  <header class="deck-nav">
+    <div class="brand-title">
+      <span>PRAMAAN</span>
+      <span class="brand-pill">12-Slide Pitch Deck</span>
+    </div>
+    <div class="deck-controls">
+      <span id="slideCounter" style="font-family:var(--mono); font-size:0.85rem; color:var(--muted); margin-right:0.5rem;">
+        01 / 12
+      </span>
+      <button id="prevBtn" class="btn-deck" title="Previous Slide (← / Up)">◀ Prev</button>
+      <button id="nextBtn" class="btn-deck" title="Next Slide (→ / Space)">Next ▶</button>
+      <button id="notesToggleBtn" class="btn-deck" title="Toggle Speaker Script (N)">🎙️ Script (N)</button>
+      <a href="/" class="btn-deck btn-primary-deck" style="text-decoration:none;">🚀 Launch App</a>
+    </div>
+  </header>
+
+  <!-- Deck Stage -->
+  <main class="deck-stage">
+
+    <!-- SLIDE 1 -->
+    <section class="slide active" data-notes="Good morning respected judges and investors. My name is Lokesh Bhavsar. Since July 1st 2024, Indian law requires a forensic expert to visit the crime scene of every offence punishable by 7 years or more. But India has only 136 government forensic labs, and 40% of posts are completely empty. This is Pramaan: turning the officer's phone into a remotely supervised mobile unit so one scientist can cover ten scenes a day.">
+      <div>
+        <div class="slide-num-pill">Slide 01 · The Thesis</div>
+        <h1 class="slide-title" style="font-size: 2.8rem; margin-top:0.5rem;">
+          One expert cannot be at every crime scene.
+        </h1>
+        <p class="slide-subtitle" style="font-size:1.3rem;">
+          Since July 2024, Indian law mandates a forensic expert at the scene of every offence punishable by seven years or more.<br>
+          The country has 136 laboratories, and two in five posts in them are empty.<br>
+          <strong>This is my idea for how the law becomes possible.</strong>
+        </p>
+        <div class="box-quote">
+          <strong>Entrepreneurship Presentation</strong> · Central University of Jammu (Cyber Security) · November 2026<br>
+          <span style="font-size:0.85rem; color:var(--muted);">Founder: Lokesh Bhavsar · lokesh.bhavsar1610@gmail.com</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 §176(3)</span>
+        <span>Press Space or Next ▶</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 -->
+    <section class="slide" data-notes="Look at these 4 numbers. 136 forensic labs for 1.4 billion people. 40% of posts are vacant, and 2 out of 3 empty chairs are the actual scientific examiners. The government bought 552 vans, but a van without an expert is just an empty vehicle. The binding bottleneck is expert hours, not metal boxes.">
+      <div>
+        <div class="slide-num-pill">Slide 02 · The Gap</div>
+        <h2 class="slide-title">136 Laboratories. 1.4 Billion People. 40% Vacancy.</h2>
+        <p class="slide-subtitle">Log kam hain, aur mandate bahut bada hai.</p>
+        <div class="grid-4">
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--cyan);">136</div>
+            <div class="metric-lbl">Government Forensic Labs in India (7 Central, 32 State, 97 Regional)</div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--red);">40%</div>
+            <div class="metric-lbl">Sanctioned Posts Vacant in surveyed laboratories</div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--gold);">2 in 3</div>
+            <div class="metric-lbl">Of all vacancies are scientific posts (the actual examiners)</div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--muted);">552</div>
+            <div class="metric-lbl">Mobile Forensic Vans across India (meaningless without experts)</div>
+          </div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:1rem;">
+          Source: International Journal of Law Management & Humanities (Dec 2024); Project 39A, National Law University Delhi.
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>The Problem · Supply-Demand Asymmetry</span>
+        <span>02 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 -->
+    <section class="slide" data-notes="On July 1st 2024, the BNSS came into force. Section 176(3) is no longer a discretion—it is mandatory for offences punishable by 7 years or more. Notice the genius of the clause: the law explicitly envisions videography on a mobile phone. That is the legal foundation of Pramaan.">
+      <div>
+        <div class="slide-num-pill">Slide 03 · Regulatory Catalyst</div>
+        <h2 class="slide-title">Section 176(3) BNSS: The Mandatory Scene Visit</h2>
+        <div class="grid-2">
+          <div class="box-quote" style="margin:0; border-left-color:var(--cyan);">
+            <strong style="color:var(--cyan);">THE LAW: SECTION 176(3) BNSS 2023</strong><br><br>
+            <em>"The officer in charge shall cause a forensic expert to visit the crime scene... and cause videography of the scene on mobile phone or other electronic device."</em><br><br>
+            <span style="font-size:0.85rem; color:var(--muted);">In force across India since 1 July 2024.</span>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:space-around;">
+            <div style="background:var(--bg); padding:1rem; border-radius:8px; border:1px solid var(--border);">
+              <strong style="color:var(--gold);">⚖️ Not Discretionary Any More</strong><br>
+              Mandatory for all offences with imprisonment of 7 years or more (Homicide, Rape, Armed Dacoity, Serious Arson).
+            </div>
+            <div style="background:var(--bg); padding:1rem; border-radius:8px; border:1px solid var(--border);">
+              <strong style="color:var(--green);">📱 The Mobile Phone Clause</strong><br>
+              The statute specifically contemplates mobile phone capture—providing statutory backing for remote supervision.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>The Catalyst · Statutory Duty</span>
+        <span>03 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 -->
+    <section class="slide" data-notes="Everyone's fix is funding new buildings under the 2,254 crore central scheme. But those labs land in 2029! Delhi's pendency fell from 27,000 only when 247 staff were hired. The bottleneck is expert hours, not brick and mortar.">
+      <div>
+        <div class="slide-num-pill">Slide 04 · The 5-Year Void</div>
+        <h2 class="slide-title">The Fix Everyone Funds Arrives in 2029. Crimes Happen Tonight.</h2>
+        <div class="grid-3">
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--red);">2029</div>
+            <div class="metric-lbl">When funded laboratory capacity is expected to arrive under NFIES</div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--gold);">247</div>
+            <div class="metric-lbl">Contract staff that reduced Delhi backlog from 27,585 to 7,178 (People, not buildings)</div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-val" style="color:var(--cyan);">0</div>
+            <div class="metric-lbl">Statutory time limits set by law for a lab to report testing results</div>
+          </div>
+        </div>
+        <div class="box-quote">
+          <strong>A Duty With Nobody To Perform It:</strong> Seven new central labs were approved, but as of February 2026, none were functioning. If no expert can reach the locus delicti, evidence is compromised and the case collapses at trial.
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>The 2024–2029 Implementation Gap</span>
+        <span>04 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 5 -->
+    <section class="slide" data-notes="Pramaan consists of three pieces. One: Guided capture, replacing the expert's drive to the scene. Two: Cryptographic chain of custody, replacing the paper register. Three: Lab triage, replacing the invisible queue.">
+      <div>
+        <div class="slide-num-pill">Slide 05 · The Solution</div>
+        <h2 class="slide-title">Three Pieces That Let One Expert Supervise Ten Scenes</h2>
+        <div class="grid-3">
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">📱</div>
+            <h3 style="color:var(--gold); margin-bottom:0.5rem;">01 · Guided Capture</h3>
+            <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+              The investigating officer opens the DFSS offence checklist, films on their phone, and the expert watches and directs live via coordinate markers.
+            </p>
+            <div style="margin-top:1rem; font-size:0.8rem; font-weight:700; color:var(--cyan);">➔ Replaces the 4-hour drive to the scene.</div>
+          </div>
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">⛓️</div>
+            <h3 style="color:var(--green); margin-bottom:0.5rem;">02 · Chain of Custody</h3>
+            <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+              Every exhibit logged at capture with GPS, timestamp, and SHA-256 hash. Follows Section 63 BSA 2023 electronic evidence rules.
+            </p>
+            <div style="margin-top:1rem; font-size:0.8rem; font-weight:700; color:var(--green);">➔ Replaces the paper register & loose bags.</div>
+          </div>
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">🧪</div>
+            <h3 style="color:var(--cyan); margin-bottom:0.5rem;">03 · Lab Triage</h3>
+            <p style="font-size:0.85rem; color:var(--muted); line-height:1.5;">
+              The FSL sees incoming cases with priority and type before dispatch. DNA and Ballistics batch together; pendency becomes actionable.
+            </p>
+            <div style="margin-top:1rem; font-size:0.8rem; font-weight:700; color:var(--gold);">➔ Replaces the invisible queue.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>The Product · DFSS & BSA Compliant</span>
+        <span>05 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 -->
+    <section class="slide" data-notes="This table compares today versus with Pramaan. Today: expert travels physically, covers 1 or 2 scenes, hands over a paper register. With Pramaan: officer captures, expert watches remotely, covers 6 to 10 scenes, and sends a cryptographically structured case file.">
+      <div>
+        <div class="slide-num-pill">Slide 06 · Operational Comparison</div>
+        <h2 class="slide-title">The Operational Leap</h2>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Today (One Expert at a Time)</th>
+              <th class="comp-col-highlight">With Pramaan (Design Target)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Who attends the crime scene?</strong></td>
+              <td>The expert, if one is available to travel</td>
+              <td class="comp-col-highlight">The officer on site, with expert watching live</td>
+            </tr>
+            <tr>
+              <td><strong>Scenes an expert covers / day</strong></td>
+              <td>One, at most two</td>
+              <td class="comp-col-highlight">Six to ten scenes per day</td>
+            </tr>
+            <tr>
+              <td><strong>What reaches the laboratory?</strong></td>
+              <td>Sealed plastic packets and a paper register</td>
+              <td class="comp-col-highlight">A structured digital case file + verified seals</td>
+            </tr>
+            <tr>
+              <td><strong>Is pendency known centrally?</strong></td>
+              <td>No, invisible queues in each department</td>
+              <td class="comp-col-highlight">Yes, real-time district-level dashboard</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:0.75rem;">
+          *Right column is the design target of the idea to be tested during the 90-day pilot.
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Comparison · Before vs. After</span>
+        <span>06 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 7 -->
+    <section class="slide" data-notes="Here is the money for one district. A district handles about 400 serious scenes a year. An expert spends 400 days travelling. At 12 lakh a year—less than the salary of one scientific assistant—a district gets complete statutory compliance.">
+      <div>
+        <div class="slide-num-pill">Slide 07 · Unit Economics</div>
+        <h2 class="slide-title">₹12 Lakh Buys a Duty The State Cannot Otherwise Perform</h2>
+        <div class="grid-2">
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:2rem; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+            <div style="font-size:0.9rem; color:var(--muted); text-transform:uppercase;">District Subscription</div>
+            <div style="font-size:3.5rem; font-weight:900; color:var(--gold); margin:0.5rem 0;">₹12 LAKH</div>
+            <div style="font-size:0.85rem; color:var(--muted);">Per district, per year (Annual B2G SaaS)</div>
+            <div style="margin-top:1.5rem; font-size:0.8rem; background:rgba(245,158,11,0.15); padding:0.5rem; border-radius:6px; color:var(--gold);">
+              Payable from Police Modernization or NFIES central fund
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:space-around;">
+            <div class="card-metric" style="text-align:left; padding:1.2rem;">
+              <strong style="color:var(--text); font-size:1.1rem;">400 Serious Crime Scenes / Year</strong>
+              <div style="font-size:0.8rem; color:var(--muted);">Average volume handled by an Indian district</div>
+            </div>
+            <div class="card-metric" style="text-align:left; padding:1.2rem;">
+              <strong style="color:var(--cyan); font-size:1.1rem;">6 to 10 Scenes Supervised / Day</strong>
+              <div style="font-size:0.8rem; color:var(--muted);">Multiplier achieved via remote streaming and digital sign-off</div>
+            </div>
+            <div class="card-metric" style="text-align:left; padding:1.2rem;">
+              <strong style="color:var(--green); font-size:1.1rem;">₹3,000 Effective Cost Per Scene</strong>
+              <div style="font-size:0.8rem; color:var(--muted);">Compared to ₹15,000+ in vehicle fuel, DA, and wasted expert travel hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>District Unit Economics</span>
+        <span>07 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 8 -->
+    <section class="slide" data-notes="Market sizing: TAM is 940 crore across all 780 districts. SAM is 250 crore across the 208 districts in notified states today. And our SOM is 60 districts by year 3, which is 7 crore ARR—capturing just a quarter of notified districts.">
+      <div>
+        <div class="slide-num-pill">Slide 08 · Market Sizing</div>
+        <h2 class="slide-title">780 Districts Need This; 60 Districts is ₹7 Crore ARR</h2>
+        <div class="grid-3">
+          <div class="card-metric" style="border-top:3px solid var(--muted);">
+            <div class="slide-num-pill">TAM</div>
+            <div class="metric-val">₹940 Cr</div>
+            <div class="metric-lbl">All 780 districts across India at ₹12 Lakh/year ceiling</div>
+          </div>
+          <div class="card-metric" style="border-top:3px solid var(--cyan);">
+            <div class="slide-num-pill" style="color:var(--cyan);">SAM</div>
+            <div class="metric-val" style="color:var(--cyan);">₹250 Cr</div>
+            <div class="metric-lbl">~208 districts in states that have already notified Sec 176(3)</div>
+          </div>
+          <div class="card-metric" style="border-top:3px solid var(--green);">
+            <div class="slide-num-pill" style="color:var(--green);">SOM</div>
+            <div class="metric-val" style="color:var(--green);">₹7 Cr</div>
+            <div class="metric-lbl">60 districts by Year 3 (Only 29% of currently notified districts)</div>
+          </div>
+        </div>
+        <div class="box-quote">
+          <strong>Strategic Takeaway:</strong> We do not need the entire country to be convinced on day one. We only target the 208 districts that are legally obligated to execute this duty today.
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>TAM · SAM · SOM Analysis</span>
+        <span>08 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 9 -->
+    <section class="slide" data-notes="Why can't an app developer build this? Anyone can film a video. Not anyone can prove the file was never edited in court. Our moat is the cryptographic chain of custody under Section 63 BSA and the district's historical case files.">
+      <div>
+        <div class="slide-num-pill">Slide 09 · The Moat</div>
+        <h2 class="slide-title">The Moat is the Evidence Chain, Not the Camera App</h2>
+        <div class="grid-2">
+          <div class="box-quote" style="border-left-color:var(--gold); margin:0;">
+            <strong style="color:var(--gold); font-size:1.1rem;">"Why not a generic app developer?"</strong><br><br>
+            Anyone can film a scene on an iPhone or Android.<br>
+            <strong>Not anyone can prove the file was never edited in a murder trial.</strong><br><br>
+            The value is the auditability of the record under Bharatiya Sakshya Adhiniyam 2023, Section 63, and the district court's trust in it.
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div style="background:var(--bg); padding:1rem; border-radius:8px; border:1px solid var(--border);">
+              <strong style="color:var(--cyan);">1. Unbroken BSA §63 Ledger:</strong><br>
+              Cryptographic SHA-256 chains render tampering impossible to conceal from the magistrate.
+            </div>
+            <div style="background:var(--bg); padding:1rem; border-radius:8px; border:1px solid var(--border);">
+              <strong style="color:var(--green);">2. Institutional Stickiness:</strong><br>
+              Once a district's malkhana and regional FSL rely on Pramaan, switching vendors breaks historical continuity.
+            </div>
+            <div style="background:var(--bg); padding:1rem; border-radius:8px; border:1px solid var(--border);">
+              <strong style="color:var(--gold);">3. Three Years of Case History:</strong><br>
+              Every solved trial deepens the institutional moat against new entrants.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Competitive Moat & Defensibility</span>
+        <span>09 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 -->
+    <section class="slide" data-notes="I am not writing code before testing. I will run 4 experiments. If a magistrate rejects remote capture, or if officers can't use it, I will kill the idea myself. Each experiment has a strict pass mark.">
+      <div>
+        <div class="slide-num-pill">Slide 10 · Validation Strategy</div>
+        <h2 class="slide-title">Four Kill Experiments: Falsifiable Pass Marks</h2>
+        <div class="grid-2">
+          <div class="card-metric" style="text-align:left;">
+            <span class="slide-num-pill">01 · Legal Admissibility</span>
+            <div style="font-size:0.95rem; font-weight:700;">Mock File Review with Magistrate & Defence</div>
+            <div style="font-size:0.8rem; color:var(--muted); margin-top:0.4rem;">Test whether remote capture survives court scrutiny.</div>
+            <div style="color:var(--green); font-weight:700; margin-top:0.75rem;">PASS MARK: Admissible; neither objects to chain.</div>
+          </div>
+          <div class="card-metric" style="text-align:left;">
+            <span class="slide-num-pill">02 · Field Feasibility</span>
+            <div style="font-size:0.95rem; font-weight:700;">20 Real Scenes in One Pilot District</div>
+            <div style="font-size:0.8rem; color:var(--muted); margin-top:0.4rem;">Can fatigued officers execute the checklist unaided?</div>
+            <div style="color:var(--green); font-weight:700; margin-top:0.75rem;">PASS MARK: 18 of 20 files accepted by the lab.</div>
+          </div>
+          <div class="card-metric" style="text-align:left;">
+            <span class="slide-num-pill">03 · Expert Capacity</span>
+            <div style="font-size:0.95rem; font-weight:700;">Time-Saved Measurement vs. Control Week</div>
+            <div style="font-size:0.8rem; color:var(--muted); margin-top:0.4rem;">Compare expert hours against physical travel baseline.</div>
+            <div style="color:var(--green); font-weight:700; margin-top:0.75rem;">PASS MARK: 3x increase in expert coverage.</div>
+          </div>
+          <div class="card-metric" style="text-align:left;">
+            <span class="slide-num-pill">04 · Commercial Demand</span>
+            <div style="font-size:0.95rem; font-weight:700;">Identify District Modernization Budget Line</div>
+            <div style="font-size:0.8rem; color:var(--muted); margin-top:0.4rem;">Validate who actually signs the ₹12 Lakh invoice.</div>
+            <div style="color:var(--green); font-weight:700; margin-top:0.75rem;">PASS MARK: One district names the exact head.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Falsifiability · 4 Pass Marks</span>
+        <span>10 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 -->
+    <section class="slide" data-notes="Here are the four risks that could kill this startup, and our day-one counter-moves. If courts reject it, we test with judges first. If government builds it, we integrate with e-Forensics as their capture layer. If tenders take 2 years, we use discretionary pilot funds.">
+      <div>
+        <div class="slide-num-pill">Slide 11 · Risk Mitigation</div>
+        <h2 class="slide-title">Four Fatal Risks & The First Move On Each</h2>
+        <div class="grid-2">
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1.25rem;">
+            <strong style="color:var(--red);">Risk 1: Courts Reject Remote Capture</strong>
+            <p style="font-size:0.82rem; color:var(--muted); margin-top:0.35rem;">Defence argues the expert was not physically present.</p>
+            <div style="color:var(--green); font-size:0.85rem; font-weight:600; margin-top:0.5rem;">
+              First Move: Test with a magistrate and defence counsel before writing production code.
+            </div>
+          </div>
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1.25rem;">
+            <strong style="color:var(--red);">Risk 2: Government Builds It In-House</strong>
+            <p style="font-size:0.82rem; color:var(--muted); margin-top:0.35rem;">e-Forensics platform already exists in central labs.</p>
+            <div style="color:var(--green); font-size:0.85rem; font-weight:600; margin-top:0.5rem;">
+              First Move: Sell the mobile capture layer e-Forensics lacks; integrate rather than replace.
+            </div>
+          </div>
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1.25rem;">
+            <strong style="color:var(--red);">Risk 3: Slow State Procurement (Tenders take 2 years)</strong>
+            <p style="font-size:0.82rem; color:var(--muted); margin-top:0.35rem;">State-level tenders take 18–24 months to clear.</p>
+            <div style="color:var(--green); font-size:0.85rem; font-weight:600; margin-top:0.5rem;">
+              First Move: Price at ₹12 Lakh to sit within discretionary pilot budgets, avoiding tenders.
+            </div>
+          </div>
+          <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1.25rem;">
+            <strong style="color:var(--red);">Risk 4: Officers Refuse to Use It</strong>
+            <p style="font-size:0.82rem; color:var(--muted); margin-top:0.35rem;">Scene teams are overworked and tech-resistant.</p>
+            <div style="color:var(--green); font-size:0.85rem; font-weight:600; margin-top:0.5rem;">
+              First Move: Design for one-handed use at 2 AM; measure usable court files, not logins.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Risk Matrix · First Moves</span>
+        <span>11 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 12 -->
+    <section class="slide" data-notes="90 days decides it. Will a magistrate accept an officer's file under remote supervision? If yes, 3 crore over 18 months reaches 60 districts and 7 crore revenue. If no, the idea is wrong and I want to know now. Thank you.">
+      <div>
+        <div class="slide-num-pill">Slide 12 · The Ask & Execution</div>
+        <h2 class="slide-title" style="font-size: 2.6rem;">Prove It In One District.</h2>
+        <p class="slide-subtitle" style="font-size:1.15rem;">
+          One test decides whether this idea is real: <strong>Will a magistrate accept a scene file captured by an officer under an expert's remote supervision?</strong><br>
+          If yes, ₹3 Crore reaches 60 districts and ₹7 Crore annual revenue.<br>
+          If no, the idea is wrong and I would rather know now.
+        </p>
+        <div class="grid-3">
+          <div class="card-metric" style="border-top:3px solid var(--gold);">
+            <div class="metric-val" style="color:var(--gold);">90 DAYS</div>
+            <div class="metric-lbl">To run the 4 kill experiments in one pilot district</div>
+          </div>
+          <div class="card-metric" style="border-top:3px solid var(--cyan);">
+            <div class="metric-val" style="color:var(--cyan);">₹3 CRORE</div>
+            <div class="metric-lbl">Seed capital to build production HSM core & reach 10 districts</div>
+          </div>
+          <div class="card-metric" style="border-top:3px solid var(--green);">
+            <div class="metric-val" style="color:var(--green);">60 DISTRICTS</div>
+            <div class="metric-lbl">In 18 months, reaching ₹7 Crore ARR & cash-flow break-even</div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; text-align:center; font-size:0.9rem; color:var(--muted);">
+          <strong>Lokesh Bhavsar</strong> · Central University of Jammu · lokesh.bhavsar1610@gmail.com · +91 92253 59114
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>github.com/mildfriend3-blip/Pramaan</span>
+        <span>Central University of Jammu · Nov 2026</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <aside id="notesDrawer" class="notes-drawer">
+    <div class="notes-title">
+      <span>🎙️ Verbatim Presenter Script (Read with calm conviction)</span>
+      <span style="font-family:var(--mono);">Press [N] to hide</span>
+    </div>
+    <div id="notesContent" class="notes-content"></div>
+  </aside>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counterEl = document.getElementById('slideCounter');
+    const notesDrawer = document.getElementById('notesDrawer');
+    const notesContent = document.getElementById('notesContent');
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      currentSlide = index;
+
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === currentSlide);
+      });
+
+      counterEl.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+      notesContent.textContent = slides[currentSlide].getAttribute('data-notes') || 'No speaker script for this slide.';
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => updateSlide(currentSlide + 1));
+    document.getElementById('prevBtn').addEventListener('click', () => updateSlide(currentSlide - 1));
+
+    document.getElementById('notesToggleBtn').addEventListener('click', () => {
+      notesDrawer.classList.toggle('open');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        updateSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        updateSlide(currentSlide - 1);
+      } else if (e.key === 'n' || e.key === 'N') {
+        notesDrawer.classList.toggle('open');
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    });
+
+    // Initialize first slide
+    updateSlide(0);
+  </script>
+</body>
+</html>
