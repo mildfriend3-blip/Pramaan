@@ -6,6 +6,39 @@ let annotations = [
   { x: 340, y: 210, label: 'Optimal DNA Swab Target' }
 ];
 
+let videoMode = 'simulated';
+let webcamStream = null;
+let isOfflineMode = false;
+let offlineQueue = JSON.parse(localStorage.getItem('pramaan_offline_queue') || '[]');
+let currentRealFileBase64 = null;
+let currentRealFileHash = null;
+
+// Synthesize pleasant forensic UI sound effects without external audio files
+function playForensicAudioAlert(type = 'ping') {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'directive') {
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } else {
+      osc.frequency.setValueAtTime(520, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+    }
+  } catch {}
+}
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
   setupTabs();
@@ -709,6 +742,7 @@ function setupEventListeners() {
   const btnPan = document.getElementById('btnCapturePanoramic');
   if (btnPan) {
     btnPan.addEventListener('click', () => {
+      playForensicAudioAlert('ping');
       alert('🎥 BNSS 176(3) 360-Degree Continuous Video Captured & SHA-256 Hashed: 7a82b99c011e4f...\nStored in Secure Local Vault.');
     });
   }
@@ -716,7 +750,143 @@ function setupEventListeners() {
   const btnVoice = document.getElementById('btnConnectSupervisor');
   if (btnVoice) {
     btnVoice.addEventListener('click', () => {
+      playForensicAudioAlert('directive');
       sendDirectiveMessage('Officer requested live audio briefing with FSL Supervisor.');
+    });
+  }
+
+  // Print Certificate Button
+  const printCertBtn = document.getElementById('printCertBtn');
+  if (printCertBtn) {
+    printCertBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
+  // Download Case Dossier Button
+  const downloadDossierBtn = document.getElementById('downloadDossierBtn');
+  if (downloadDossierBtn) {
+    downloadDossierBtn.addEventListener('click', () => {
+      window.location.href = `/api/cases/${currentCaseId}/export`;
+    });
+  }
+
+  // District ROI & Capacity Calculator Slider
+  const sliderScenes = document.getElementById('sliderScenes');
+  if (sliderScenes) {
+    sliderScenes.addEventListener('input', (e) => {
+      const scenes = parseInt(e.target.value, 10);
+      document.getElementById('valAnnualScenes').textContent = `${scenes} scenes`;
+      document.getElementById('calcTraditionalDays').textContent = `${scenes} days`;
+      const pramaanDays = Math.ceil(scenes / 8);
+      document.getElementById('calcPramaanDays').textContent = `${pramaanDays} days (8x faster)`;
+      const hoursSaved = (scenes - pramaanDays) * 8;
+      document.getElementById('calcHoursSaved').textContent = `${hoursSaved.toLocaleString()} hours / yr`;
+      const costPerScene = Math.round(1200000 / scenes);
+      document.getElementById('calcCostPerScene').textContent = `₹${costPerScene.toLocaleString()} / scene`;
+    });
+  }
+
+  // Video Source Switcher (Simulated vs Real Device Webcam)
+  const videoSourceSelect = document.getElementById('videoSourceSelect');
+  if (videoSourceSelect) {
+    videoSourceSelect.addEventListener('change', async (e) => {
+      videoMode = e.target.value;
+      if (videoMode === 'webcam') {
+        try {
+          const videoEl = document.getElementById('webcamVideo');
+          webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 } });
+          videoEl.srcObject = webcamStream;
+          videoEl.play();
+        } catch (err) {
+          alert('Could not access device webcam or permission denied. Falling back to simulated forensic scene.');
+          videoMode = 'simulated';
+          videoSourceSelect.value = 'simulated';
+        }
+      } else {
+        if (webcamStream) {
+          webcamStream.getTracks().forEach(t => t.stop());
+          webcamStream = null;
+        }
+      }
+    });
+  }
+
+  // Offline Mode Toggle
+  const toggleOfflineBtn = document.getElementById('toggleOfflineBtn');
+  const offlineBanner = document.getElementById('offlineSyncBanner');
+  const queueCountEl = document.getElementById('offlineQueueCount');
+  if (toggleOfflineBtn) {
+    toggleOfflineBtn.addEventListener('click', () => {
+      isOfflineMode = !isOfflineMode;
+      if (isOfflineMode) {
+        toggleOfflineBtn.innerHTML = '🟠 Offline (Local HSM Cache)';
+        toggleOfflineBtn.style.color = 'var(--accent-gold)';
+        offlineBanner.style.display = 'flex';
+      } else {
+        toggleOfflineBtn.innerHTML = '🟢 Online (Live Sync)';
+        toggleOfflineBtn.style.color = 'var(--accent-green)';
+        if (offlineQueue.length === 0) offlineBanner.style.display = 'none';
+      }
+    });
+  }
+
+  // Offline Queue Sync Button
+  const btnSync = document.getElementById('btnSyncOfflineQueue');
+  if (btnSync) {
+    btnSync.addEventListener('click', async () => {
+      if (offlineQueue.length === 0) {
+        alert('No offline cached exhibits to sync.');
+        return;
+      }
+      try {
+        const res = await fetch(`/api/cases/${currentCaseId}/sync-offline`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offlineQueue })
+        });
+        if (res.ok) {
+          alert(`Successfully synchronized ${offlineQueue.length} offline exhibits with server ledger!`);
+          offlineQueue = [];
+          localStorage.removeItem('pramaan_offline_queue');
+          queueCountEl.textContent = '0';
+          offlineBanner.style.display = 'none';
+          loadCaseDetail(currentCaseId);
+        }
+      } catch (err) {
+        alert('Sync failed: ' + err.message);
+      }
+    });
+  }
+
+  // Real File Input Hash Reader
+  const exFileInput = document.getElementById('exRealFile');
+  if (exFileInput) {
+    exFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        currentRealFileBase64 = null;
+        currentRealFileHash = null;
+        document.getElementById('exComputedHashPreview').textContent = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const arrayBuf = evt.target.result;
+        // Compute SHA-256 via browser WebCrypto
+        const hashBuf = await crypto.subtle.digest('SHA-256', arrayBuf);
+        const hashArray = Array.from(new Uint8Array(hashBuf));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        currentRealFileHash = hashHex;
+
+        // Base64
+        const binary = String.fromCharCode.apply(null, new Uint8Array(arrayBuf));
+        currentRealFileBase64 = btoa(binary);
+
+        document.getElementById('exComputedHashPreview').textContent = `SHA-256: ${hashHex}`;
+      };
+      reader.readAsArrayBuffer(file);
     });
   }
 }
@@ -874,57 +1044,70 @@ function drawScene(canvas, isSupervisor, time) {
   const w = canvas.width;
   const h = canvas.height;
 
-  // Background room perspective (Bank street scene)
-  ctx.fillStyle = '#111827';
-  ctx.fillRect(0, 0, w, h);
+  if (videoMode === 'webcam') {
+    const videoEl = document.getElementById('webcamVideo');
+    if (videoEl && videoEl.readyState >= 2) {
+      ctx.drawImage(videoEl, 0, 0, w, h);
+    } else {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Awaiting device camera feed...', w / 2 - 100, h / 2);
+    }
+  } else {
+    // Background room perspective (Bank street scene)
+    ctx.fillStyle = '#111827';
+    ctx.fillRect(0, 0, w, h);
 
-  // Perspective floor
-  ctx.fillStyle = '#1f2937';
-  ctx.beginPath();
-  ctx.moveTo(0, h * 0.45);
-  ctx.lineTo(w, h * 0.45);
-  ctx.lineTo(w, h);
-  ctx.lineTo(0, h);
-  ctx.fill();
-
-  // Grid floor lines
-  ctx.strokeStyle = '#374151';
-  ctx.lineWidth = 1;
-  for (let x = 0; x <= w; x += 40) {
+    // Perspective floor
+    ctx.fillStyle = '#1f2937';
     ctx.beginPath();
-    ctx.moveTo(x, h * 0.45);
-    ctx.lineTo(x * 1.5 - w * 0.25, h);
-    ctx.stroke();
+    ctx.moveTo(0, h * 0.45);
+    ctx.lineTo(w, h * 0.45);
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.fill();
+
+    // Grid floor lines
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= w; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, h * 0.45);
+      ctx.lineTo(x * 1.5 - w * 0.25, h);
+      ctx.stroke();
+    }
+
+    // Draw simulated police flashing beacon light reflection
+    const flash = Math.sin(time / 200) > 0;
+    ctx.fillStyle = flash ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw Evidence Placards on Floor
+    // Placard 1 (Blood stain)
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(180, 220, 26, 26);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('01', 184, 238);
+
+    // Blood Stain Spot
+    ctx.fillStyle = '#7f1d1d';
+    ctx.beginPath();
+    ctx.ellipse(225, 235, 18, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Placard 2 (Casing)
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(380, 260, 26, 26);
+    ctx.fillStyle = '#000000';
+    ctx.fillText('02', 384, 278);
+
+    // Cartridge brass dot
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(415, 272, 8, 4);
   }
-
-  // Draw simulated police flashing beacon light reflection
-  const flash = Math.sin(time / 200) > 0;
-  ctx.fillStyle = flash ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)';
-  ctx.fillRect(0, 0, w, h);
-
-  // Draw Evidence Placards on Floor
-  // Placard 1 (Blood stain)
-  ctx.fillStyle = '#f59e0b';
-  ctx.fillRect(180, 220, 26, 26);
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('01', 184, 238);
-
-  // Blood Stain Spot
-  ctx.fillStyle = '#7f1d1d';
-  ctx.beginPath();
-  ctx.ellipse(225, 235, 18, 9, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Placard 2 (Casing)
-  ctx.fillStyle = '#f59e0b';
-  ctx.fillRect(380, 260, 26, 26);
-  ctx.fillStyle = '#000000';
-  ctx.fillText('02', 384, 278);
-
-  // Cartridge brass dot
-  ctx.fillStyle = '#eab308';
-  ctx.fillRect(415, 272, 8, 4);
 
   // Draw Center Crosshair HUD
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
@@ -1033,24 +1216,60 @@ function setupModals() {
       const physicalSealNumber = document.getElementById('exSealNumber').value;
       const fslAssignedDivision = document.getElementById('exFslDivision').value;
 
+      playForensicAudioAlert('ping');
+
+      if (isOfflineMode) {
+        // Queue in localStorage for offline resiliency
+        const offlineItem = {
+          exhibitCode,
+          category,
+          description,
+          foundLocation,
+          packagingMethod,
+          physicalSealNumber,
+          fslAssignedDivision,
+          sha256Hash: currentRealFileHash || null,
+          timestamp: new Date().toISOString()
+        };
+        offlineQueue.push(offlineItem);
+        localStorage.setItem('pramaan_offline_queue', JSON.stringify(offlineQueue));
+        document.getElementById('offlineQueueCount').textContent = offlineQueue.length;
+        document.getElementById('offlineSyncBanner').style.display = 'flex';
+        alert(`Exhibit ${exhibitCode} cryptographically cached in local secure storage. Will sync when connection is restored.`);
+        document.getElementById('newExhibitModal').classList.remove('active');
+        newExForm.reset();
+        currentRealFileBase64 = null;
+        currentRealFileHash = null;
+        return;
+      }
+
       try {
+        const payload = {
+          exhibitCode,
+          category,
+          description,
+          foundLocation,
+          packagingMethod,
+          physicalSealNumber,
+          fslAssignedDivision
+        };
+        if (currentRealFileBase64) {
+          payload.fileContentBase64 = currentRealFileBase64;
+          payload.fileName = `${exhibitCode.replace(/[^a-zA-Z0-9]/g, '_')}.jpg`;
+        }
+
         const res = await fetch(`/api/cases/${currentCaseId}/exhibits`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            exhibitCode,
-            category,
-            description,
-            foundLocation,
-            packagingMethod,
-            physicalSealNumber,
-            fslAssignedDivision
-          })
+          body: JSON.stringify(payload)
         });
 
         if (res.ok) {
           document.getElementById('newExhibitModal').classList.remove('active');
           newExForm.reset();
+          currentRealFileBase64 = null;
+          currentRealFileHash = null;
+          document.getElementById('exComputedHashPreview').textContent = '';
           loadCaseDetail(currentCaseId);
         }
       } catch (err) {

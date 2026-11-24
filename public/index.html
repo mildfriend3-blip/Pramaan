@@ -121,7 +121,10 @@
           <div class="card-title">
             📁 Serious Offence Case Registry (Mandatory Forensic Oversight)
           </div>
-          <div style="display: flex; gap: 0.5rem;">
+          <div style="display: flex; gap: 0.5rem; align-items:center;">
+            <button id="downloadDossierBtn" class="btn-secondary" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; border-radius: var(--radius-sm); cursor:pointer;">
+              📥 Export Forensic Dossier
+            </button>
             <button id="openNewCaseModalBtn" class="btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.85rem; border-radius: var(--radius-sm); border:none; cursor:pointer;">
               + Register New BNSS Crime Scene
             </button>
@@ -149,6 +152,51 @@
           </div>
         </div>
       </div>
+
+      <!-- District Unit Economics & Capacity Calculator (Slide 7 & 8) -->
+      <div class="card" style="border-left: 4px solid var(--accent-gold);">
+        <div class="card-header">
+          <div class="card-title">
+            💰 District Forensics Capacity & ROI Calculator (BNSS Sec 176(3) Economics)
+          </div>
+          <span class="chk-badge-ref">NFIES ₹2,254 Cr Modernization Scheme</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+            Test the unit economics from Lokesh Bhavsar's Pramaan model: ₹12 Lakh/district/year unlocks mandatory coverage that otherwise requires ₹2+ crore in laboratory infrastructure and travel overhead.
+          </p>
+          <div class="layout-split">
+            <div>
+              <div class="form-group">
+                <label class="form-label" id="lblAnnualScenes">ANNUAL SERIOUS OFFENCES IN DISTRICT: <strong id="valAnnualScenes" style="color:var(--accent-gold);">400 scenes</strong></label>
+                <input type="range" id="sliderScenes" min="100" max="1000" step="25" value="400" style="width:100%; accent-color:var(--accent-gold);">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ANNUAL DISTRICT PRAMAAN SUBSCRIPTION: <strong>₹12,00,000 / year</strong></label>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Payable from State Police Modernization or Central NFIES Scheme</div>
+              </div>
+            </div>
+            <div style="background:var(--bg-secondary); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); display:flex; flex-direction:column; justify-content:space-around;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Traditional In-Person Expert Days:</span>
+                <strong id="calcTraditionalDays" style="color:var(--accent-red);">400 days</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Pramaan Remote Supervised Days:</span>
+                <strong id="calcPramaanDays" style="color:var(--accent-green);">50 days (8x faster)</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Expert Working Hours Saved:</span>
+                <strong id="calcHoursSaved" style="color:var(--accent-cyan);">2,800 hours / yr</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-color); padding-top:0.5rem;">
+                <span style="font-size:0.85rem; font-weight:600;">Effective Cost Per Supervised Scene:</span>
+                <strong id="calcCostPerScene" style="color:var(--accent-gold); font-size:1.05rem;">₹3,000 / scene</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ==================================================== -->
@@ -164,15 +212,41 @@
             Optimized for field investigating officers. High-contrast large touch targets, automated cryptographic hashing, and live expert guidance.
           </div>
         </div>
-        <div style="text-align: right;">
-          <label style="font-size:0.75rem; color:var(--text-muted); display:block;">ACTIVE SCENE CASE</label>
-          <select id="captureCaseSelector" class="form-select" style="max-width:240px; padding:0.35rem 0.5rem;"></select>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); display:block;">CAMERA SOURCE</label>
+            <select id="videoSourceSelect" class="form-select" style="max-width:180px; padding:0.25rem 0.45rem; font-size:0.75rem;">
+              <option value="simulated">🎬 Karol Bagh Scene (Simulated)</option>
+              <option value="webcam">📷 Device Camera (Live)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); display:block;">CONNECTIVITY</label>
+            <button id="toggleOfflineBtn" class="btn-icon" style="font-size:0.75rem; padding:0.25rem 0.5rem;">
+              🟢 Online (Live Sync)
+            </button>
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted); display:block;">ACTIVE SCENE CASE</label>
+            <select id="captureCaseSelector" class="form-select" style="max-width:200px; padding:0.25rem 0.45rem; font-size:0.8rem;"></select>
+          </div>
         </div>
+      </div>
+
+      <!-- Offline Sync Notification Banner -->
+      <div id="offlineSyncBanner" style="display:none; background:rgba(245,158,11,0.2); border:1px solid var(--accent-gold); padding:0.65rem 1rem; border-radius:var(--radius-sm); margin-bottom:1rem; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.85rem; color:var(--accent-gold);">
+          ⚠️ <strong>Offline Field Mode Active:</strong> Exhibits are cached locally with cryptographic SHA-256 timestamps.
+        </span>
+        <button id="btnSyncOfflineQueue" class="btn-primary" style="padding:0.35rem 0.75rem; font-size:0.8rem; border:none; border-radius:var(--radius-sm); cursor:pointer;">
+          Sync <span id="offlineQueueCount">0</span> Cached Items
+        </button>
       </div>
 
       <div class="layout-split">
         <!-- Left: Simulated Camera & Video Stream Feed -->
         <div>
+          <video id="webcamVideo" autoplay playsinline muted style="display:none;"></video>
           <div class="camera-container" id="cameraFeedContainer">
             <canvas id="cameraCanvas" class="camera-canvas-overlay" width="640" height="360"></canvas>
             
@@ -454,6 +528,9 @@
                 <button id="generateCertBtn" class="btn-primary" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-radius:var(--radius-sm); border:none; cursor:pointer;">
                   Issue Certificate
                 </button>
+                <button id="printCertBtn" class="btn-secondary" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-radius:var(--radius-sm); cursor:pointer;">
+                  🖨️ Print / Save PDF
+                </button>
               </div>
             </div>
             <div class="card-body" id="certificateContainer">
@@ -612,6 +689,12 @@
               <option value="Cyber Forensics Division">Cyber Forensics Division</option>
               <option value="Chemistry & Toxicology Division">Chemistry & Toxicology Division</option>
             </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">ATTACH REAL EVIDENCE PHOTOGRAPH / FILE (COMPUTES INSTANT SHA-256)</label>
+            <input type="file" id="exRealFile" class="form-input" accept="image/*,application/pdf">
+            <div id="exComputedHashPreview" style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:0.3rem;"></div>
           </div>
 
           <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
