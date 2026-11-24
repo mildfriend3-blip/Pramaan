@@ -1,0 +1,22 @@
+{
+  "name": "pramaan",
+  "version": "1.0.0",
+  "description": "National Digital Forensic Evidence Chain & Remote Scene Supervision System compliant with Section 176(3) BNSS 2023 & Section 63 BSA 2023",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_system.js"
+  },
+  "keywords": [
+    "forensics",
+    "bnss-176-3",
+    "bsa-63",
+    "digital-evidence",
+    "chain-of-custody",
+    "remote-supervision",
+    "govtech",
+    "dfss"
+  ],
+  "author": "Lokesh Bhavsar",
+  "license": "Apache-2.0"
+}

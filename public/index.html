@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PRAMAAN (प्रमाण) · Forensic Evidence & Remote Supervision System</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Tricolor Ribbon -->
+  <div class="gov-top-banner"></div>
+
+  <!-- Navigation Bar -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <div class="brand-emblem">प्र</div>
+      <div class="brand-title">
+        <h1>
+          PRAMAAN <span style="font-size:0.9rem; font-weight:400; opacity:0.8;">· प्रमाण</span>
+          <span class="badge-law">BNSS §176(3) · BSA §63</span>
+        </h1>
+        <div class="brand-subtitle">National Digital Forensic Evidence Chain & Remote Scene Supervision System</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <!-- Role Switcher for Rapid Evaluator Testing -->
+      <div class="role-switcher-box">
+        <label for="demoRoleSelect" style="color:var(--text-muted); font-size:0.75rem;">VIEW AS:</label>
+        <select id="demoRoleSelect" class="role-select">
+          <option value="investigating_officer">👮 SI Rajesh (Investigating Officer)</option>
+          <option value="forensic_expert">🔬 Dr. Aditi (FSL Scientific Expert)</option>
+          <option value="lab_director">🏛️ Dr. K.S. Meena (FSL Director)</option>
+          <option value="magistrate_or_prosecutor">⚖️ Hon. R.P. Sundaram (Magistrate)</option>
+        </select>
+      </div>
+
+      <div class="active-user-badge">
+        <span id="activeUserName" class="active-user-name">SI Rajesh Sharma</span>
+        <span id="activeUserRole" class="active-user-role">Investigating Officer · Delhi Police</span>
+      </div>
+
+      <button id="themeToggleBtn" class="btn-icon" title="Toggle 2 AM Crime Scene / Day Mode">
+        🌙
+      </button>
+
+      <button id="logoutBtn" class="btn-icon" title="Sign out" style="display:none;">
+        🚪
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-container">
+    <button class="tab-btn active" data-tab="tab-dashboard">
+      📊 District Dashboard
+    </button>
+    <button class="tab-btn" data-tab="tab-capture">
+      📱 2 AM Field Capture <span class="tab-badge">BNSS 176(3)</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-supervision">
+      📡 Remote Supervision <span class="tab-badge" id="liveBadge">LIVE</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-custody">
+      ⛓️ Chain of Custody & Vault
+    </button>
+    <button class="tab-btn" data-tab="tab-triage">
+      🧪 Lab Triage & Pendency
+    </button>
+    <button class="tab-btn" data-tab="tab-court">
+      ⚖️ BSA 63 Certificate & Verifier
+    </button>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- ==================================================== -->
+    <!-- TAB 1: DISTRICT DASHBOARD                            -->
+    <!-- ==================================================== -->
+    <section id="tab-dashboard" class="view-panel active">
+      <div class="stats-grid">
+        <div class="stat-card cyan">
+          <div class="stat-label">BNSS §176(3) Mandatory Scenes</div>
+          <div class="stat-value" id="statMandatoryScenes">400</div>
+          <div class="stat-subtext">Estimated annual serious offences in district</div>
+        </div>
+
+        <div class="stat-card green">
+          <div class="stat-label">Expert Coverage Multiplier</div>
+          <div class="stat-value" id="statCoverageMultiplier">3.4x</div>
+          <div class="stat-subtext">6-10 scenes/day via Pramaan remote supervision</div>
+        </div>
+
+        <div class="stat-card blue">
+          <div class="stat-label">Active Scene Dispatches</div>
+          <div class="stat-value" id="statActiveScenes">1</div>
+          <div class="stat-subtext">Field units currently on locus delicti</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Pending Lab Exhibits</div>
+          <div class="stat-value" id="statPendingExhibits">2</div>
+          <div class="stat-subtext">Batched for Biology, Ballistics & Cyber</div>
+        </div>
+
+        <div class="stat-card green">
+          <div class="stat-label">Court-Ready BSA Files</div>
+          <div class="stat-value" id="statCourtReady">1</div>
+          <div class="stat-subtext">With unbroken cryptographic hash chains</div>
+        </div>
+      </div>
+
+      <!-- Action & Filter Bar -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            📁 Serious Offence Case Registry (Mandatory Forensic Oversight)
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="openNewCaseModalBtn" class="btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.85rem; border-radius: var(--radius-sm); border:none; cursor:pointer;">
+              + Register New BNSS Crime Scene
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>FIR & Police Station</th>
+                  <th>Offence & Section</th>
+                  <th>Mandate</th>
+                  <th>Locus / Scene</th>
+                  <th>Investigating Officer</th>
+                  <th>Assigned FSL Expert</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="casesTableBody">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- TAB 2: FIELD CAPTURE (2 AM ONE-HANDED MODE)          -->
+    <!-- ==================================================== -->
+    <section id="tab-capture" class="view-panel">
+      <div class="night-mode-banner">
+        <div>
+          <div class="night-mode-title">
+            🌙 ONE-HANDED 2 AM HIGH-STRESS FIELD CAPTURE MODE
+          </div>
+          <div class="night-mode-desc">
+            Optimized for field investigating officers. High-contrast large touch targets, automated cryptographic hashing, and live expert guidance.
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <label style="font-size:0.75rem; color:var(--text-muted); display:block;">ACTIVE SCENE CASE</label>
+          <select id="captureCaseSelector" class="form-select" style="max-width:240px; padding:0.35rem 0.5rem;"></select>
+        </div>
+      </div>
+
+      <div class="layout-split">
+        <!-- Left: Simulated Camera & Video Stream Feed -->
+        <div>
+          <div class="camera-container" id="cameraFeedContainer">
+            <canvas id="cameraCanvas" class="camera-canvas-overlay" width="640" height="360"></canvas>
+            
+            <div class="camera-hud-top">
+              <div class="hud-pill">
+                <span class="hud-rec-dot"></span>
+                <span id="videoRecTimer">REC 00:04:18 · BNSS 176(3)</span>
+              </div>
+              <div class="hud-pill" style="color:var(--accent-cyan);">
+                📡 1080p FHD · 60fps · LATENCY: 42ms
+              </div>
+            </div>
+
+            <div class="camera-hud-bottom">
+              <div class="hud-pill" style="font-family:var(--font-mono); font-size:0.7rem;">
+                📍 LAT: 28.6517°N, LON: 77.1906°E · GPS ACC: ±1.2m
+              </div>
+              <div class="hud-pill" id="expertSupervisionBadge" style="background:rgba(16,185,129,0.8); color:#000;">
+                ✓ Dr. Aditi Varma Watching Live
+              </div>
+            </div>
+          </div>
+
+          <!-- Touch-friendly Field Action Bar -->
+          <div class="field-action-bar">
+            <button id="btnCapturePanoramic" class="btn-field-large btn-secondary">
+              <span style="font-size: 1.4rem;">🔄</span>
+              <span>Record 360° Pan</span>
+            </button>
+            <button id="btnNewExhibitCapture" class="btn-field-large btn-primary">
+              <span style="font-size: 1.4rem;">📸</span>
+              <span>Tag & Hash Exhibit</span>
+            </button>
+            <button id="btnConnectSupervisor" class="btn-field-large btn-secondary">
+              <span style="font-size: 1.4rem;">🎙️</span>
+              <span>Speak to Expert</span>
+            </button>
+          </div>
+
+          <!-- Active Case Exhibits Preview -->
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <div class="card-title">📦 Scene Exhibits Tagged So Far</div>
+            </div>
+            <div class="card-body">
+              <div id="sceneExhibitsList" style="display:flex; flex-direction:column; gap:0.6rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: DFSS SOP Guided Checklist -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                📋 DFSS Statutory Capture Checklist
+              </div>
+              <span id="checklistProgressBadge" class="tab-badge" style="font-size:0.8rem;">
+                2 / 6 Completed
+              </span>
+            </div>
+            <div class="card-body">
+              <div id="checklistItemsList" class="checklist-list">
+                <!-- Checklist items loaded dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- TAB 3: LIVE REMOTE SUPERVISION CONSOLE               -->
+    <!-- ==================================================== -->
+    <section id="tab-supervision" class="view-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            📡 FSL Scientific Officer Remote Oversight Console
+          </div>
+          <div style="font-size: 0.82rem; color: var(--accent-cyan);">
+            Active Remote Session: Case <span id="supCaseName">Karol Bagh (FIR 142/2026)</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="layout-split">
+            <!-- Left: Interactive Video Feed with Remote Annotation -->
+            <div>
+              <div style="margin-bottom: 0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.8rem; color:var(--text-muted);">
+                  Click anywhere on the stream below to drop a <strong>Virtual Evidence Marker</strong> on the officer's screen:
+                </span>
+                <button id="clearAnnotationsBtn" class="btn-icon" style="font-size:0.75rem; padding:0.25rem 0.5rem;">
+                  Clear Pins
+                </button>
+              </div>
+
+              <div class="camera-container" style="cursor: crosshair;">
+                <canvas id="supervisorCanvas" class="camera-canvas-overlay" width="640" height="360"></canvas>
+                <div class="camera-hud-top">
+                  <div class="hud-pill" style="background:rgba(245,158,11,0.9); color:#000;">
+                    LIVE SUPERVISION · DR. ADITI VARMA
+                  </div>
+                  <div class="hud-pill" style="font-family:var(--font-mono); font-size:0.7rem;">
+                    BITRATE: 4.8 Mbps · TLS 1.3
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Instruction Chips -->
+              <div style="margin-top:0.85rem;">
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem;">QUICK DFSS FORENSIC PROMPTS:</div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                  <button class="btn-icon prompt-chip" data-prompt="Please swab the outer dried margin of the blood stain with sterile saline.">
+                    💉 Swab Dried Margin
+                  </button>
+                  <button class="btn-icon prompt-chip" data-prompt="Do not use metal forceps on the weapon rifling. Use rubber-tipped forceps.">
+                    🔫 Rubber Forceps on Barrel
+                  </button>
+                  <button class="btn-icon prompt-chip" data-prompt="Place the ABFO metric scale ruler parallel to the toolmark before close-up.">
+                    📐 Align ABFO Scale
+                  </button>
+                  <button class="btn-icon prompt-chip" data-prompt="Bag the smartphone in the anti-static Faraday pouch; do not power on.">
+                    📱 Faraday Shield Device
+                  </button>
+                  <button class="btn-icon prompt-chip" data-prompt="Evidence collection approved. Proceed to seal with official serialized tape.">
+                    ✅ Approve & Seal
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Real-time Communication Channel -->
+            <div>
+              <div class="chat-box">
+                <div class="chat-messages" id="chatMessages">
+                  <!-- Live messages loaded dynamically -->
+                </div>
+                <div class="chat-input-bar">
+                  <input type="text" id="chatInputText" class="input-text" placeholder="Type directive to field investigating officer...">
+                  <button id="sendChatBtn" class="btn-primary" style="padding:0.45rem 1rem; border:none; border-radius:var(--radius-sm); cursor:pointer;">
+                    Send Directive
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- TAB 4: CHAIN OF CUSTODY & EVIDENCE VAULT             -->
+    <!-- ==================================================== -->
+    <section id="tab-custody" class="view-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            ⛓️ Cryptographic Chain of Custody (CoC) Ledger & Vault
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <label style="font-size:0.75rem; color:var(--text-muted);">FILTER EXHIBIT:</label>
+            <select id="custodyExhibitSelect" class="form-select" style="max-width:240px; padding:0.35rem 0.5rem;"></select>
+            <button id="openTransferModalBtn" class="btn-primary" style="padding:0.45rem 0.85rem; font-size:0.85rem; border-radius:var(--radius-sm); border:none; cursor:pointer;">
+              + Record Custody Transfer
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="exhibitDetailBanner" style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <!-- Populated via JS -->
+          </div>
+
+          <h3 style="font-size: 1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem;">
+            <span>Chronological Immutable Custody Trail</span>
+            <span id="custodyIntegrityBadge" class="tab-badge" style="background:rgba(16,185,129,0.2); color:var(--accent-green);">
+              ✓ Cryptographically Verified
+            </span>
+          </h3>
+
+          <div id="custodyTimeline" class="timeline">
+            <!-- Timeline steps loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- TAB 5: LAB TRIAGE & PENDENCY MANAGEMENT             -->
+    <!-- ==================================================== -->
+    <section id="tab-triage" class="view-panel">
+      <div class="stats-grid">
+        <div class="stat-card cyan">
+          <div class="stat-label">DNA & Biology Division Queue</div>
+          <div class="stat-value" id="triageDnaCount">1</div>
+          <div class="stat-subtext">Avg Turnaround: 3.8 days (vs 45 days traditional)</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Ballistics & Firearms Queue</div>
+          <div class="stat-value" id="triageBallisticsCount">2</div>
+          <div class="stat-subtext">Automated IBIS cartridge comparison batch</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Cyber & Digital Forensics Queue</div>
+          <div class="stat-value" id="triageCyberCount">1</div>
+          <div class="stat-subtext">Bit-stream imaging & hash verification</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Statutory Pendency Red Alerts</div>
+          <div class="stat-value">0</div>
+          <div class="stat-subtext">100% BNSS compliance within 60-day period</div>
+        </div>
+      </div>
+
+      <div class="layout-split">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🧪 Laboratory Testing Division Batches</div>
+          </div>
+          <div class="card-body">
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Scientific Division</th>
+                    <th>Pending</th>
+                    <th>Batched</th>
+                    <th>Testing</th>
+                    <th>Completed</th>
+                  </tr>
+                </thead>
+                <tbody id="triageDivisionTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🗺️ District Forensics Pendency Map</div>
+          </div>
+          <div class="card-body">
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>District</th>
+                    <th>Active Scenes</th>
+                    <th>In-Lab Pipeline</th>
+                    <th>Compliance</th>
+                  </tr>
+                </thead>
+                <tbody id="triageDistrictTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- TAB 6: COURT ADMISSIBILITY & BSA 63 CERTIFICATE      -->
+    <!-- ==================================================== -->
+    <section id="tab-court" class="view-panel">
+      <div class="layout-split">
+        <!-- Left: Certificate Generator / Viewer -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                📜 Bharatiya Sakshya Adhiniyam, 2023 §63 Certificate
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <select id="certCaseSelector" class="form-select" style="max-width:200px; padding:0.35rem 0.5rem;"></select>
+                <button id="generateCertBtn" class="btn-primary" style="padding:0.4rem 0.75rem; font-size:0.8rem; border-radius:var(--radius-sm); border:none; cursor:pointer;">
+                  Issue Certificate
+                </button>
+              </div>
+            </div>
+            <div class="card-body" id="certificateContainer">
+              <!-- Certified view loaded here -->
+              <div style="text-align:center; padding:2rem; color:var(--text-muted);">
+                Select a case above to view or issue its court-admissible Section 63 BSA certificate.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Judicial Public Hash Authenticator -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                ⚖️ Public / Judicial Tamper-Detection Engine
+              </div>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+                Magistrates, defense attorneys, or appellate courts can verify any exhibit or video without authentication by querying its cryptographic SHA-256 fingerprint against the immutable chain.
+              </p>
+
+              <div class="form-group">
+                <label class="form-label">ENTER EXHIBIT SHA-256 HASH OR CODE:</label>
+                <div style="display:flex; gap:0.5rem;">
+                  <input type="text" id="verifyHashInput" class="form-input" placeholder="e.g. paste 64-char hex hash or 'EX-01/BLOOD'...">
+                  <button id="btnVerifyHash" class="btn-primary" style="padding:0.45rem 1rem; border:none; border-radius:var(--radius-sm); cursor:pointer; white-space:nowrap;">
+                    Verify Integrity
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Test Buttons -->
+              <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+                <button id="btnTestAuthentic" class="btn-secondary" style="flex:1; padding:0.45rem; font-size:0.78rem; border-radius:var(--radius-sm); cursor:pointer;">
+                  🧪 Test Authentic Hash (EX-01/BLOOD)
+                </button>
+                <button id="btnTestTampered" class="btn-secondary" style="flex:1; padding:0.45rem; font-size:0.78rem; border-radius:var(--radius-sm); cursor:pointer; color:var(--accent-red);">
+                  ⚠️ Simulate File Tampering (Corrupt Hash)
+                </button>
+              </div>
+
+              <!-- Verification Result Box -->
+              <div id="verifyResultBox" style="display:none; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: REGISTER NEW CRIME SCENE                      -->
+  <!-- ==================================================== -->
+  <div id="newCaseModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight:700;">🚨 Register BNSS 176(3) Crime Scene</h3>
+        <button class="btn-icon closeModalBtn" style="border:none;">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="newCaseForm">
+          <div class="form-group">
+            <label class="form-label">FIR NUMBER & POLICE STATION *</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+              <input type="text" id="newFirNumber" class="form-input" placeholder="e.g. FIR No. 195/2026" required>
+              <input type="text" id="newPoliceStation" class="form-input" placeholder="e.g. PS Karol Bagh" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">OFFENCE NATURE & BNS PENAL SECTIONS *</label>
+            <input type="text" id="newOffenceType" class="form-input" placeholder="e.g. Armed Dacoity with Fatal Grievous Hurt" required style="margin-bottom:0.5rem;">
+            <input type="text" id="newPenalSections" class="form-input" placeholder="e.g. BNS 103(1), BNS 310(2) [Offence >= 7 Yrs]" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">CRIME SCENE ADDRESS & LANDMARK *</label>
+            <input type="text" id="newSceneLocation" class="form-input" placeholder="e.g. Shop 12, Main Market, Ajmal Khan Road" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PRIORITY LEVEL</label>
+            <select id="newCasePriority" class="form-select">
+              <option value="urgent">🔴 Urgent (Undertrial / Fatal / High Profile)</option>
+              <option value="high">🟠 High (Mandatory BNSS 176(3))</option>
+              <option value="routine">🟡 Routine (Property Crime > 7 yrs)</option>
+            </select>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary closeModalBtn" style="padding:0.6rem 1.25rem; border-radius:var(--radius-sm); cursor:pointer;">Cancel</button>
+            <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem; border:none; border-radius:var(--radius-sm); cursor:pointer;">Dispatch & Activate Scene</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: ADD / CAPTURE EXHIBIT                         -->
+  <!-- ==================================================== -->
+  <div id="newExhibitModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight:700;">📸 Tag & Register Physical Exhibit</h3>
+        <button class="btn-icon closeModalBtn" style="border:none;">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="newExhibitForm">
+          <div class="form-group">
+            <label class="form-label">EXHIBIT CODE & CATEGORY *</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+              <input type="text" id="exCode" class="form-input" placeholder="e.g. EX-03/BLOOD" required>
+              <select id="exCategory" class="form-select" required>
+                <option value="Biological">🩸 Biological (Blood, Saliva, Hair)</option>
+                <option value="Ballistics">🔫 Ballistics (Firearm, Cartridge, Slug)</option>
+                <option value="Digital">💻 Digital (Phone, SSD, DVR, Pen Drive)</option>
+                <option value="Chemical">🧪 Chemical (Arson, Explosive, Unknown)</option>
+                <option value="Trace">🔍 Trace (Fiber, Glass, Paint)</option>
+                <option value="Weapons">🗡️ Weapons (Blunt / Edged)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">DESCRIPTION OF EXHIBIT *</label>
+            <textarea id="exDescription" class="form-textarea" rows="2" placeholder="e.g. Reddish brown blood smear swabbed from broken glass pane..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">FOUND LOCATION WITHIN SCENE *</label>
+            <input type="text" id="exFoundLocation" class="form-input" placeholder="e.g. Northwest window sill, 1.5m above ground" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">DFSS PACKAGING METHOD *</label>
+            <input type="text" id="exPackaging" class="form-input" placeholder="e.g. Sterile desiccated swab in breathable paper envelope" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PHYSICAL TAMPER-EVIDENT SEAL NUMBER *</label>
+            <input type="text" id="exSealNumber" class="form-input" placeholder="e.g. DEL-POL-SEAL-99104" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">TARGET FSL TESTING DIVISION *</label>
+            <select id="exFslDivision" class="form-select">
+              <option value="Biology & DNA Division">Biology & DNA Division</option>
+              <option value="Ballistics & Firearms Division">Ballistics & Firearms Division</option>
+              <option value="Cyber Forensics Division">Cyber Forensics Division</option>
+              <option value="Chemistry & Toxicology Division">Chemistry & Toxicology Division</option>
+            </select>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary closeModalBtn" style="padding:0.6rem 1.25rem; border-radius:var(--radius-sm); cursor:pointer;">Cancel</button>
+            <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem; border:none; border-radius:var(--radius-sm); cursor:pointer;">Compute Hash & Register</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: TRANSFER CUSTODY                              -->
+  <!-- ==================================================== -->
+  <div id="transferModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight:700;">⛓️ Record Custody Handover</h3>
+        <button class="btn-icon closeModalBtn" style="border:none;">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="transferForm">
+          <div class="form-group">
+            <label class="form-label">TRANSFER EVENT TYPE *</label>
+            <select id="trEventType" class="form-select" required>
+              <option value="malkhana_deposit">📦 Police Station Malkhana Overnight Deposit</option>
+              <option value="dispatch_to_fsl">🚚 Road Certificate Dispatch to FSL</option>
+              <option value="fsl_reception">🏛️ Forensic Science Laboratory Intake Reception</option>
+              <option value="division_handover">🔬 Handover to Testing Scientist (DNA / Ballistics)</option>
+              <option value="analysis_completed">✅ Examination Concluded / Re-sealed</option>
+              <option value="court_deposition">⚖️ Production in Court of Law (Judicial Record)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">RECEIVING CUSTODIAN DETAILS *</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+              <input type="text" id="trToPerson" class="form-input" placeholder="Recipient Name" required>
+              <input type="text" id="trToDesignation" class="form-input" placeholder="Designation / Rank" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">NEW CUSTODY LOCATION *</label>
+            <input type="text" id="trLocation" class="form-input" placeholder="e.g. FSL Rohini Central Reception Desk" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PURPOSE OF HANDOVER *</label>
+            <input type="text" id="trPurpose" class="form-input" placeholder="e.g. Safe laboratory examination under Section 176(3)" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PHYSICAL SEAL CONDITION INSPECTION *</label>
+            <select id="trSealCondition" class="form-select" required>
+              <option value="intact_and_verified">🔒 Intact & Matched with Specimen Seal Impression</option>
+              <option value="inspected_under_supervision">🔍 Inspected & Verified by FSL Scientific Officer</option>
+              <option value="broken_for_subsampling_under_fsl_sop">✂️ Broken for Sub-sampling under FSL Protocol</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">OFFICIAL REMARKS</label>
+            <input type="text" id="trRemarks" class="form-input" placeholder="e.g. Received intact with specimen seal card and Form FSL-1">
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary closeModalBtn" style="padding:0.6rem 1.25rem; border-radius:var(--radius-sm); cursor:pointer;">Cancel</button>
+            <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem; border:none; border-radius:var(--radius-sm); cursor:pointer;">Sign & Seal Transfer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
